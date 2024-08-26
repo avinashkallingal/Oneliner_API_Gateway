@@ -8,7 +8,7 @@ userRoutes.get('/', (req: Request, res: Response) => {
 })
 userRoutes.post('/register', userController.register);
 userRoutes.post('/verifyOtp', userController.otp);
-userRoutes.post('/resendOtp', userController.resendOtp);
+//userRoutes.post('/resendOtp', userController.resendOtp);
 userRoutes.post('/login', userController.login);
 userRoutes.post('/logout', userController.logout);
 
