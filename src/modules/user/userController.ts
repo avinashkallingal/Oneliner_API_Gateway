@@ -9,6 +9,7 @@ export const userController = {
     register: async (req: Request, res: Response) => {
         try {
             const data = req.body;
+            console.log("req.body by sign up in api gateway")
             const operation = 'register_user';
 
             console.log(req.body, 'body print');
@@ -18,6 +19,9 @@ export const userController = {
 
             userController.memoryStorage['user'] = JSON.stringify(result.user_data);
             userController.memoryStorage['otp']=result.otp
+            setTimeout(() => {
+                userController.memoryStorage['otp']=""
+              }, 60000);
 
             return res.json({data: result });
         } catch (error) {
@@ -29,19 +33,34 @@ export const userController = {
     otp: async (req: Request, res: Response) => {
         try {
             console.log('otp verify function triggered');
+            console.log(req.body,"this is req body on otp in api gateway")
             const data = req.body;
-            const userData = JSON.parse(userController.memoryStorage['user']);
+            let userData
             const userOtp = userController.memoryStorage['otp'];
-            const operation = 'save_user'
-            console.log("generated otp got in api gateway",userOtp)
-            console.log("usertyped otp in api gateway",data.data)
-            console.log("usertyped otp in api gateway",data)
-            if(userOtp==data.data){
+            let operation=""
+            if(data.operation=="change_password_otp"){
+               
+                //otp checking
+                if(userController.memoryStorage['otp']==data.otp){
+                    console.log(data.otp,"otp in chnagw pss",userController.memoryStorage['otp']," saved pass")
+                    return res.json({success:true,message:"otp matching"})
+                }else{
+                    console.log(data.otp,"otp in chnagw paass",userController.memoryStorage['otp']," saved paaass")
+                    return res.json({success:false,message:"otp mismatch"})
+                }
+
+            }else{
+                operation = 'save_user'
+                 userData = JSON.parse(userController.memoryStorage['user']);
+            }
+            console.log("generated otp got in api gateway",userController.memoryStorage['otp'],userOtp) 
+         
+            if(userController.memoryStorage['otp']==data.otp){
             const result: any = await userRabbitMqClient.produce(userData, operation);
             return res.json({ success: true, message: 'account created successfully!!!!!' })
             }else{
                 console.log('Error in OTP verification:');
-                return res.json({ success: false, message: 'otp not matching!!!!!' })
+                return res.json({ success: false, message: ' otp not matching!!!!!' }) 
             }
         } catch (error) {
             console.log('Error in OTP verification:', error);
@@ -51,18 +70,40 @@ export const userController = {
 
     resendOtp: async (req: Request, res: Response) => {
         // Implement resend OTP logic here
+        const operation = 'resend_otp'
+        const userData = JSON.parse(userController.memoryStorage['user']);
+        const result: any = await userRabbitMqClient.produce(userData.email, operation);
+        userController.memoryStorage['otp']=result.otp//global otp storage for compare
+        console.log(userController.memoryStorage['otp'],"result otp in controler global otp") 
+        console.log(result.otp,"result otp in controler")
+        setTimeout(() => {
+            userController.memoryStorage['otp']=""
+          }, 60000);//expiration time for otp
+        return res.json({ success: true, message: 'otp send sucessfully!!!!!' })
+
+
+
+    //  const generateOtp = (): string => {
+
+    //         const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    //         return otp;
+            
+    //     }
+
     },
 
-    login: async (req: Request, res: Response) => {
+    login: async (req: Request, res: Response) => { 
         try {
             const data = req.body;
-            const operation = 'user-login';
+            const operation = 'user_login'; 
 
             const result: any = await userRabbitMqClient.produce(data, operation);
             console.log(result, 'user-login');
 
             if (!result.success) {
-                return res.status(401).json({ error: 'Login failed' });
+                console.log("credential not matching")
+                return res.json(result);
+                // return res.status(401).json({ error: 'Login failed' });
             }
 
             const token = generateToken({ id: result.user_data._id, email: result.user_data.email });
@@ -72,6 +113,52 @@ export const userController = {
             return res.json(result);
         } catch (error) {
             console.log('error in userLogin --> ', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+    
+    verifyEmail: async(req:Request,res:Response)=>{
+        try{
+            const data=req.body
+            console.log(data,"email")
+            const operation = 'verify_email'; 
+            const result:any=await userRabbitMqClient.produce(data,operation)
+           
+            if (!result.success) {
+                console.log("credential not matching")
+                return res.json(result);
+                // return res.status(401).json({ error: 'Login failed' });
+            }else{
+                userController.memoryStorage['otp']=result.user_data.otp
+                setTimeout(() => {
+                    userController.memoryStorage['otp']=""
+                  }, 60000);//expiration time for otp
+                return res.json(result);
+            }
+        }
+        catch(error){
+            console.log('error in verifyEmail --> ', error);
+            return res.status(500).json({ error: 'Internal server error' });
+            
+        }
+    },
+    resetPassword:async(req:Request,res:Response)=>{
+        try{
+            const data=req.body
+            console.log(data,"password in reset password api gateway")
+            const operation = 'reset_password'; 
+            const result:any=await userRabbitMqClient.produce(data,operation)
+            if (!result.success) {
+                console.log("error in reset")
+                return res.json(result);
+                // return res.status(401).json({ error: 'Login failed' });
+            }else{
+               console.log("password changed")
+                return res.json(result);
+            }
+        }
+        catch(error){
+            console.log('error in resetPassword --> ', error);
             return res.status(500).json({ error: 'Internal server error' });
         }
     },
