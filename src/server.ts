@@ -29,7 +29,7 @@ app.use(cors(corsOptions));
 app.use('/', userRoutes)
 app.use('/admin', adminRoutes)
 
-const server = http.createServer(app);
+const server = http.createServer(app); 
 
 const startServer = async () => {
     try {
