@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import logger from './utils/logger';
 import { userRoutes } from './modules/user/userRoutes'
 import { adminRoutes } from './modules/user/adminRoutes';
+import { postRoutes } from './modules/post/postRoutes';
+
 import config from './config/config';
 import dotenv from 'dotenv';
 dotenv.config()
@@ -28,6 +30,7 @@ app.use(cors(corsOptions));
 
 app.use('/', userRoutes)
 app.use('/admin', adminRoutes)
+app.use('/post', postRoutes)
 
 const server = http.createServer(app); 
 
