@@ -243,6 +243,9 @@ export const userController = {
     }
   },
 
+  
+  
+
   //
   editUserProfile: async (req: Request, res: Response) => {
     try {

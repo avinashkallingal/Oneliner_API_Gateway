@@ -16,10 +16,16 @@ postRoutes.post('/addPost', upload.fields([
   ]),postController.editPost)
 
 // postRoutes.post('/addPost', authencticateToken, upload.array('files'), postController.addPost);
-postRoutes.get('/getAllPosts', postController.getAllPosts)
+postRoutes.get('/getPosts', postController.getAllPosts)
+postRoutes.get('/getUserPosts', postController.getUserPosts)
 postRoutes.post('/pdfUrlFetch',postController.pdfUrlFetch)
+postRoutes.post('/imageUrlFetch',postController.imageUrlFetch)
 postRoutes.post('/likePost',postController.likePost)
 postRoutes.post('/deletePost',postController.deletePost)
+postRoutes.put("/addComment",postController.addComment)
+postRoutes.put("/reportPost",postController.reportPost)
+postRoutes.get("/adminPostData",postController.adminPostData)
+postRoutes.get('/admin/removePost', postController.removePostAdmin)
 
 
 

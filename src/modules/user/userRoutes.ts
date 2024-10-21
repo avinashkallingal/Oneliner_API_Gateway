@@ -22,6 +22,7 @@ userRoutes.post('/fetchUserData',userController.fetchUserData)
 // edit in userProfile
 userRoutes.put('/userProfile/update/:id',authencticateToken, upload.single('avatar'), userController.editUserProfile)
 
+
 // userRoutes.post('/resetPassword',(req,res)=>{
 // console.log("password came",req.body)
 // });
