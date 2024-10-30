@@ -8,7 +8,7 @@ export default class Consumer {
         console.log(`Consuming messages from queue: ${this.replyQueueName}`);
         this.channel.consume(this.replyQueueName, (message: ConsumeMessage | null) => {
             if (message) {
-                console.log('Message received in consumeMessage:', message.content.toString());
+                // console.log('Message received in consumeMessage:', message.content.toString());
                 this.eventEmitter.emit(message.properties.correlationId.toString(), message);
                 this.channel.ack(message); // Acknowledge the message
             } else {

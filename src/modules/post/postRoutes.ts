@@ -18,6 +18,7 @@ postRoutes.post('/addPost', upload.fields([
 // postRoutes.post('/addPost', authencticateToken, upload.array('files'), postController.addPost);
 postRoutes.get('/getPosts', postController.getAllPosts)
 postRoutes.get('/getUserPosts', postController.getUserPosts)
+postRoutes.get('/getPost', postController.getPost)
 postRoutes.post('/pdfUrlFetch',postController.pdfUrlFetch)
 postRoutes.post('/imageUrlFetch',postController.imageUrlFetch)
 postRoutes.post('/likePost',postController.likePost)

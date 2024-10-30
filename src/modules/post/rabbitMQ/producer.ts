@@ -20,7 +20,7 @@ export default class Producer {
             this.eventEmitter.once(uuid, async (message) => {
                 try {
                     const reply = JSON.parse(message.content.toString());
-                    console.log('Received reply in producer:', reply);
+                    // console.log('Received reply in producer:', reply);
                     resolve(reply);
                 } catch (error) {
                     reject(error);

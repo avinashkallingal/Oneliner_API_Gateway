@@ -6,6 +6,7 @@ interface RabbitMQConfig {
         queues: {
             userQueue: string
             postQueue: string
+            messageQueue:string
         }
     }
 }
@@ -16,6 +17,7 @@ const rabbitMQConfig: RabbitMQConfig = {
         queues: {
             userQueue: 'user_queue',
             postQueue: 'post_queue',
+            messageQueue:'message_queue',
         }
     }
 }

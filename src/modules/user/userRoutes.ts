@@ -21,6 +21,9 @@ userRoutes.post('/googleLogin',userController.googleLogin)
 userRoutes.post('/fetchUserData',userController.fetchUserData)
 // edit in userProfile
 userRoutes.put('/userProfile/update/:id',authencticateToken, upload.single('avatar'), userController.editUserProfile)
+userRoutes.put('/follow',userController.follow)
+userRoutes.put('/unFollow',userController.unFollow)
+userRoutes.post('/contacts',userController.contactsFetch)
 
 
 // userRoutes.post('/resetPassword',(req,res)=>{

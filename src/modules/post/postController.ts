@@ -170,7 +170,7 @@ export const postController = {
           });
 
           // Return combined data in response
-          console.log(combinedData);
+          // console.log(combinedData);
           return res.status(200).json({ success: true, data: combinedData });
         } else {
           // Handle case where user data is not available
@@ -193,7 +193,6 @@ export const postController = {
         .json({ success: false, message: "Internal server error" });
     }
   },
-
   getUserPosts: async (req: Request, res: Response) => {
     try {
       console.log("hiiiiiiiiii+++++++++user posts in api gateway");
@@ -215,6 +214,33 @@ export const postController = {
       }
     } catch (error) {
       console.error("Error in getUserPosts:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
+    }
+  },
+
+  getPost: async (req: Request, res: Response) => {
+    try {
+      console.log("hiiiiiiiiii+++++++++user view post in api gateway");
+      const postId = req.query.id;
+      console.log(postId, "hiiiiiiiiii+++++++++user posts in api gateway");
+      const userOperation = "get-post";
+      const postResponse = (await postRabbitMqClient.produce(
+        { postId },
+        userOperation
+      )) as RabbitMQResponse<Post[]>;
+      if (postResponse.success) {
+        return res
+          .status(200)
+          .json({
+            success: true,
+            message: "post data fetched successfully",
+            data: postResponse.data,
+          });
+      }
+    } catch (error) {
+      console.error("Error in getPost:", error);
       res
         .status(500)
         .json({ success: false, message: "Internal server error" });

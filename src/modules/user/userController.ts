@@ -243,6 +243,62 @@ export const userController = {
     }
   },
 
+  follow: async (req: Request, res: Response) => {
+    // Implement logic here
+    const data = req.body;
+    console.log(req.body, "body in goole login api gateway");
+    const operation = "follow_user";
+    try {
+      const result: any = await userRabbitMqClient.produce(data, operation);
+      if (result.success) {
+        return res.json({ success: true, result });
+      } else {
+        return res.json({ success: false, result });
+      }
+    } catch (error) {
+      console.log("error in resetPassword --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  unFollow: async (req: Request, res: Response) => {
+    // Implement logic here
+    const data = req.body;
+    console.log(req.body, "body in goole login api gateway");
+    const operation = "unFollow_user";
+    try {
+      const result: any = await userRabbitMqClient.produce(data, operation);
+      if (result.success) {
+        return res.json({ success: true, result });
+      } else {
+        return res.json({ success: false, result });
+      }
+    } catch (error) {
+      console.log("error in resetPassword --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  
+  contactsFetch: async (req: Request, res: Response) => {
+    // Implement logic here
+  
+    const data = req.body;
+    console.log(req.body, "body in contact fetch api gateway");
+        const operation = "contacts_fetch";
+    try {
+      const result: any = await userRabbitMqClient.produce(data, operation);
+      if (result.success) {
+        return res.json({ success: true, result });
+      } else {
+        return res.json({ success: false, result });
+      }
+    } catch (error) {
+      console.log("error in resetPassword --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
   
   
 
