@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
-// import messageRabbitMqClient from '../modules/message/rabbitMQ/client';
+import messageRabbitMqClient from '../modules/message/rabitMQ/client';
 
 interface User {
     id: string;
@@ -26,7 +26,7 @@ export const initializeSocket = (server: HttpServer) => {
     });
 
     io.on('connection', (socket) => {
-        console.log('user connected ->', socket.id);
+        console.log('socket server started ->', socket.id);
 
         socket.on('userConnected', (userId) => {
             console.log(userId)
@@ -52,15 +52,15 @@ export const initializeSocket = (server: HttpServer) => {
 
             try {
                 const operation = 'save-message';
-                // const response: any = await messageRabbitMqClient.produce(message, operation);
-                // console.log(response, 'response in sendMesage socker')
-                // if (response.success) {
-                //     io.to(message.chatId).emit('newMessage', message);
-                //     console.log('Message sent to chat:', message.chatId);
-                // } else {
-                //     console.error('Failed to send message:', response.message);
-                // }
-                io.to(message.chatId).emit('newMessage', message);
+                const response: any = await messageRabbitMqClient.produce(message, operation);
+                console.log(response, 'response in sendMesage socket')
+                if (response.success) {
+                    io.to(message.chatId).emit('newMessage', message);
+                    console.log('Message sent to chat:', message.chatId);
+                } else {
+                    console.error('Failed to send message:', response.message);
+                }
+                // io.to(message.chatId).emit('newMessage', message);
             } catch (err) {
                 console.error('Error sending message to RabbitMQ:', err);
             }

@@ -10,7 +10,7 @@ const authMiddleware = authencticateToken;
 
 messageRouter.get('/getConversationData', authMiddleware, messageController.getConversationData);
 messageRouter.post('/createChatId', messageController.getChatId);
-messageRouter.get('/getmessages', authMiddleware, messageController.getMessage);
+messageRouter.get('/getmessages', messageController.getMessage);
 messageRouter.get('/getNotification',authMiddleware,messageController.getNotification)
 messageRouter.post('/sendImage',authMiddleware,upload.array('images'),messageController.saveImages)
 messageRouter.post('/sendVideo',authMiddleware,upload.array('images'),messageController.saveImages)

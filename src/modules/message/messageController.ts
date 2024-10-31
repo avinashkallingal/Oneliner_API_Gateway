@@ -95,7 +95,7 @@ export const messageController = {
 
     getMessage: async (req: Request, res: Response) => {
         try {
-            console.log(req.query, '---------------get message in controller api')
+            console.log(req.query, 'get message in controller api')
             const userId = req.query.userId as string;
             const recievedId = req.query.receiverId as string;
 
@@ -105,25 +105,26 @@ export const messageController = {
             const operation = 'fetch-message';
             const result = await messageRabbitMqClient.produce({ userId, recievedId }, operation) as any;
 
+            console.log(result," message result in api gateway ++++++++++++++++++++")
+            // console.log(result, '-------prev message of the users')
 
-            console.log(result, '-------prev message of the users')
-
-            const userIds = [recievedId];
-            const userOperation = "get-user-deatils-for-post";
-            const userResponse = await userRabbitMqClient.produce({ userIds }, userOperation) as RabbitMQResponse<User[]>;
+            // const userIds = [recievedId];
+            // const userOperation = "get-user-deatils-for-post";
+            // const userResponse = await userRabbitMqClient.produce({ userIds }, userOperation) as RabbitMQResponse<User[]>;
 
 
-            console.log(userResponse, 'hello user response')
+            // console.log(userResponse, 'hello user response')
 
-            let responseData: { messages: any[]; user: User | null } = {
-                messages: result.data,
-                user: null
-            };
+            // let responseData: { messages: any[]; user: User | null } = {
+            //     messages: result.data,
+            //     user: null
+            // };
 
-            if (userResponse.success && Array.isArray(userResponse.data) && userResponse.data.length > 0) {
-                responseData.user = userResponse.data[0];
-            }
-            res.status(200).json({ success: true, data: responseData });
+            // if (userResponse.success && Array.isArray(userResponse.data) && userResponse.data.length > 0) {
+            //     responseData.user = userResponse.data[0];
+            // }
+            // res.status(200).json({ success: true, data: responseData });
+            res.status(200).json({ success: true, data: result.data });
         } catch (error) {
             logger.error("Error occurred while fetching messages", { error });
             res.status(500).json({ error: "Error occurred while fetching messages" });
