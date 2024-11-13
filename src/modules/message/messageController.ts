@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import messageRabbitMqClient from './rabitMQ/client';
 import userRabbitMqClient from '../user/rabbitMQ/client';
 import logger from "../../utils/logger";
+import { promises } from "dns";
+import { read } from "fs";
 
 interface Chat {
     participants: any;
@@ -105,7 +107,7 @@ export const messageController = {
             const operation = 'fetch-message';
             const result = await messageRabbitMqClient.produce({ userId, recievedId }, operation) as any;
 
-            console.log(result," message result in api gateway ++++++++++++++++++++")
+            // console.log(result," message result in api gateway ++++++++++++++++++++")
             // console.log(result, '-------prev message of the users')
 
             // const userIds = [recievedId];
@@ -128,6 +130,98 @@ export const messageController = {
         } catch (error) {
             logger.error("Error occurred while fetching messages", { error });
             res.status(500).json({ error: "Error occurred while fetching messages" });
+        }
+    },
+
+    getInboxMessage: async (req: Request, res: Response) => {
+        try {
+            console.log(req.query, 'get message in controller api')
+            const userId = req.query.userId as string;
+          
+
+            if (!userId ) {
+                return res.status(400).json({ error: "UserId or receiver id is missing" });
+            }
+            const operation = 'fetch-inbox-message';
+            const messageResult =await messageRabbitMqClient.produce({ userId}, operation) as any
+            console.log(messageResult," message inbox fetch in api gateway)*=============***********")
+          
+            //    let ids:any[]=[]
+            //    messageResult.data.map((val:any)=>ids.push(val.senderId))
+           
+             
+            //    const uniqueIds = [...new Set(ids)];
+            //    console.log(uniqueIds,"ids+++++++++++++++++++++++")
+               
+
+            const messagesWithReceiverData = await Promise.all(
+                messageResult.data.map(async (chatData:any,index:any) => {
+                    // For each message, fetch the receiver user data
+                    const receiverData:any = await userRabbitMqClient.produce(
+                        { userId: chatData.receiverId },
+                        "fetch-user-for-inbox"
+                    );
+                    const senderData:any = await userRabbitMqClient.produce(
+                        { userId: chatData.senderId },
+                        "fetch-user-for-inbox"
+                    );
+                    
+    
+                    // Combine message with receiver user data
+                    return {
+                        ...messageResult.data[index],
+                        sender: receiverData.user_data,
+                        reciever:senderData.user_data,
+                        chatRoomData:chatData, // Assuming `data` contains the user object
+                    };
+                })
+            );
+            
+
+     
+            res.status(200).json({ success: true, data: messagesWithReceiverData });
+        } catch (error) {
+            logger.error("Error occurred while fetching messages in inbox msg", { error });
+            console.log(error," error in inbox messag")
+            res.status(500).json({ error: "Error occurred while fetching messages" });
+        }
+    },
+
+    readUpdate: async (req: Request, res: Response) => {
+        try {
+            const read = req.body.read as string;
+            // userId: userId, receiverId: userData._id
+            const userId=req.body.userId
+            const receiverId=req.body.receiverId
+           
+            if (!read ) {
+                return res.status(400).json({ error: "no read status found" });
+            }
+            const operation = 'read-update';
+            const response = await messageRabbitMqClient.produce({ read,userId,receiverId }, operation);
+            return res.json(response);
+        } catch (error) {
+            logger.error("Error occurred while fetching chat ID", { error });
+            res.status(500).json({ error: "Error occurred while fetching chat ID" });
+        }
+    },
+    
+    uploadImage: async (req: Request, res: Response) => {
+        try {
+          
+            console.log(req.files,"response in upload file%%%%%%%%%%^^^^^^^^^^")
+            // userId: userId, receiverId: userData._id
+            const file=req.files
+           
+            if (!file ) {
+                return res.status(400).json({ error: "no file found" });
+            }
+            const operation = 'save-image';
+            const response = await messageRabbitMqClient.produce({ file }, operation);
+            return res.json(response);
+        } catch (error) {
+            logger.error("Error occurred while uploading file", { error });
+            res.status(500).json({ error: "Error occurred while uploading file" });
         }
     },
 

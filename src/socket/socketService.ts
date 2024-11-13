@@ -43,7 +43,7 @@ export const initializeSocket = (server: HttpServer) => {
         socket.on('userTyping', (id) => {
             console.log('user is typing ', id);
             const receiverSocketId = onlineUsers.get(id) || '';
-            socket.to(receiverSocketId).emit('onUserTyping')
+            socket.broadcast.emit('onUserTyping')
 
         })
 
@@ -66,9 +66,24 @@ export const initializeSocket = (server: HttpServer) => {
             }
         });
 
-        socket.on('newImages', async (message) => {
-            console.log('Received message', message);
-            io.to(message.chatId).emit('newMessage', message);
+        socket.on('newImage', async (message) => {
+            // console.log('Received message', message);
+            console.log(message," newImages&&&&&&&&&&&&&&&&&&&&&&")
+            try {
+                const operation = 'save-media';
+                const response: any = await messageRabbitMqClient.produce(message, operation);
+                console.log(response, 'response in sendMesage socket')
+                if (response.success) {
+                    io.to(message.chatId).emit('newMessage', message);
+                    console.log('Message sent to chat:', message.chatId);
+                } else {
+                    console.error('Failed to send message:', response.message);
+                }
+                // io.to(message.chatId).emit('newMessage', message);
+            } catch (err) {
+                console.error('Error sending message to RabbitMQ:', err);
+            }
+            // io.to(message.chatId).emit('newMessage', message);
         })
 
         // // video call.
