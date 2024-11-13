@@ -46,6 +46,12 @@ export const initializeSocket = (server: HttpServer) => {
             socket.broadcast.emit('onUserTyping')
 
         })
+        socket.on('userOnline', (id) => {
+            console.log('user is online ', id);
+            const receiverSocketId = onlineUsers.get(id) || '';
+            socket.broadcast.emit('onUserOnline')
+
+        })
 
         socket.on('sendMessage', async (message) => {
             console.log('Received message:', message);
