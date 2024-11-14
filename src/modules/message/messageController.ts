@@ -228,7 +228,7 @@ export const messageController = {
     getNotification: async (req: Request, res: Response) => {
         try {
             const id = req.query.id;
-            const operation = 'getNotification'
+            const operation = 'get-Notification'
             const result = await messageRabbitMqClient.produce(id, operation);
             console.log(result);
             res.status(200).json(result)

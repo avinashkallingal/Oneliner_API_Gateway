@@ -140,14 +140,17 @@ export const initializeSocket = (server: HttpServer) => {
 //     }
 // };
 
-// export const sendNotification = async (notificationData: any) => {
-//     console.log('sendNotification triggered in socketio.', notificationData)
-//     const receiverSocketId = onlineUsers.get(notificationData.senderId);
-//     const notification = await messageRabbitMqClient.produce(notificationData, 'save-notification')
+export const sendNotification = async (notificationData: any) => {
+    console.log('sendNotification triggered in socketio.', notificationData)
+    const receiverSocketId = onlineUsers.get(notificationData.senderId);
 
-//     if (receiverSocketId) {
-//         io.to(receiverSocketId).emit('newNotification', notificationData);
-//     } else {
-//         console.log('user is not in online')
-//     }
-// }
+
+    const notification = await messageRabbitMqClient.produce(notificationData, 'save-notification')
+    console.log(notification," notification response in socket*&********************")
+ io.emit('newNotification', notificationData);
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit('newNotification', notificationData);
+    } else {
+        console.log('user is not in online')
+    }
+}

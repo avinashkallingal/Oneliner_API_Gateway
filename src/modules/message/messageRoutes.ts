@@ -18,6 +18,7 @@ messageRouter.post('/upload', upload.fields([
     { name: 'FileData', maxCount: 1 },  // Handling an array of images 
       // Handling a single PDF file
   ]),messageController.uploadImage)
+  messageRouter.get('/getNotification', messageController.getNotification);
 
 
 

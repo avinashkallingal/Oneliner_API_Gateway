@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import postRabbitMqClient from "./rabbitMQ/client";
 import userRabbitMqClient from "../../modules/user/rabbitMQ/client";
+import { sendNotification } from '../../socket/socketService'
 
 interface Post {
   _id: string;
@@ -394,6 +395,26 @@ export const postController = {
       )) as RabbitMQResponse<Post[]>;
       if (result.success) {
         if (result.like) {
+          //
+          console.log("1111111111111111111111111111111111111")
+          const postData: any = await postRabbitMqClient.produce(data, 'get-post');
+          console.log(postData.data[0],"  ^^^^^^^^^^^^^^^^^++0000+++++^^^^^^^^^^^^")
+          const userData: any = await userRabbitMqClient.produce(data, 'fetch-user-for-inbox');
+          console.log(userData.user_data, 'like like ')
+          console.log(postData.data[0].userId," post user id%%%%%%%%%%%%%%%%")
+          console.log(postData)
+          const notification: any = {
+              userId: data.userId,
+              senderId: postData.data[0].userId,
+              type: 'LIKE',
+              postId: postData.data[0]._id,
+              message: `${userData.user_data.username} liked your post`,
+              avatar: userData.user_data.profilePicture,
+              userName: userData.user_data.username
+          }
+          sendNotification(notification);
+          //
+
           return res
             .status(200)
             .json({ success: true, message: "Liked", like: true });
