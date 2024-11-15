@@ -19,6 +19,7 @@ messageRouter.post('/upload', upload.fields([
       // Handling a single PDF file
   ]),messageController.uploadImage)
   messageRouter.get('/getNotification', messageController.getNotification);
+  messageRouter.get('/readNotification',messageController.readNotification)
 
 
 
@@ -39,7 +40,7 @@ messageRouter.post('/upload', upload.fields([
 messageRouter.get('/getNotification',authMiddleware,messageController.getNotification)
 messageRouter.post('/sendImage',authMiddleware,upload.array('images'),messageController.saveImages)
 messageRouter.post('/sendVideo',authMiddleware,upload.array('images'),messageController.saveImages)
-messageRouter.get('/readNotification',authMiddleware,messageController.readNotification)
+
 
 
 export {messageRouter}

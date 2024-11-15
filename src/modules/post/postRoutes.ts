@@ -2,6 +2,7 @@ import express from 'express';
 import upload from '../../multer/multer';
 import authencticateToken from '../../middleware/authMiddleware';
 import { postController } from './postController';
+
 import multer from 'multer';
 const postRoutes = express.Router();
 
@@ -16,14 +17,14 @@ postRoutes.post('/addPost', upload.fields([
   ]),postController.editPost)
 
 // postRoutes.post('/addPost', authencticateToken, upload.array('files'), postController.addPost);
-postRoutes.get('/getPosts', postController.getAllPosts)
-postRoutes.get('/getUserPosts', postController.getUserPosts)
-postRoutes.get('/getPost', postController.getPost)
-postRoutes.post('/pdfUrlFetch',postController.pdfUrlFetch)
-postRoutes.post('/imageUrlFetch',postController.imageUrlFetch)
-postRoutes.post('/likePost',postController.likePost)
-postRoutes.post('/deletePost',postController.deletePost)
-postRoutes.post("/addComment",postController.addComment)
+postRoutes.get('/getPosts',authencticateToken, postController.getAllPosts)
+postRoutes.get('/getUserPosts', authencticateToken,postController.getUserPosts)
+postRoutes.get('/getPost',authencticateToken, postController.getPost)
+postRoutes.post('/pdfUrlFetch',authencticateToken,postController.pdfUrlFetch)
+postRoutes.post('/imageUrlFetch',authencticateToken,postController.imageUrlFetch)
+postRoutes.post('/likePost',authencticateToken,postController.likePost)
+postRoutes.post('/deletePost',authencticateToken,postController.deletePost)
+postRoutes.post("/addComment",authencticateToken,postController.addComment)
 postRoutes.put("/reportPost",postController.reportPost)
 postRoutes.get("/adminPostData",postController.adminPostData)
 postRoutes.get('/admin/removePost', postController.removePostAdmin)

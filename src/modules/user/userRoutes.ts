@@ -18,12 +18,15 @@ userRoutes.post('/logout', userController.logout);
 userRoutes.post('/verifyEmail',userController.verifyEmail);
 userRoutes.post('/resetPassword',userController.resetPassword);
 userRoutes.post('/googleLogin',userController.googleLogin)
-userRoutes.post('/fetchUserData',userController.fetchUserData)
+userRoutes.post('/fetchUserData',authencticateToken,userController.fetchUserData)
 // edit in userProfile
 userRoutes.put('/userProfile/update/:id',authencticateToken, upload.single('avatar'), userController.editUserProfile)
-userRoutes.put('/follow',userController.follow)
-userRoutes.put('/unFollow',userController.unFollow)
-userRoutes.post('/contacts',userController.contactsFetch)
+userRoutes.put('/follow',authencticateToken,userController.follow)
+userRoutes.put('/unFollow',authencticateToken,userController.unFollow)
+userRoutes.post('/contacts',authencticateToken,userController.contactsFetch)
+
+// refresh token verification
+userRoutes.post('/refresh-token', userController.refreshToken)
 
 
 // userRoutes.post('/resetPassword',(req,res)=>{

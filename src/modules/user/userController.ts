@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import userRabbitMqClient from "./rabbitMQ/client";
 import { generateToken } from "../../jwt/jwtCreate";
 import rabbitMQConfig from "../../config/rabbitMQconfig";
+import config from '../../config/config';
+import jwt from 'jsonwebtoken';
 
 export const userController = {
   // Define memory storage object
@@ -88,6 +90,7 @@ export const userController = {
   },
 
   resendOtp: async (req: Request, res: Response) => {
+    try {
     // Implement resend OTP logic here
     const operation = "resend_otp";
     const userData = JSON.parse(userController.memoryStorage["user"]);
@@ -112,6 +115,11 @@ export const userController = {
     //         return otp;
 
     //     }
+  }
+  catch (error) {
+    console.log("error in resend otp --> ", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
   },
 
   login: async (req: Request, res: Response) => {
@@ -132,14 +140,14 @@ export const userController = {
         id: result.user_data._id,
         email: result.user_data.email,
       });
-      const refreshToken = generateToken({
-        id: result.user_data._id,
-        email: result.user_data.email,
-      });
+      // const refreshToken = generateToken({
+      //   id: result.user_data._id,
+      //   email: result.user_data.email,
+      // });
 
       // res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
-      result.token = token;
-      result.refreshToken = refreshToken;
+      result.token = token.accessToken;
+      result.refreshToken = token.refreshToken;
 
       return res.json(result);
     } catch (error) {
@@ -171,6 +179,36 @@ export const userController = {
       return res.status(500).json({ error: "Internal server error" });
     }
   },
+
+
+  refreshToken: async (req: Request, res: Response) => {
+    try {
+        const { refreshToken } = req.body;
+        console.log(refreshToken, 'ref toekn')
+        // Check if the refresh token exists and is valid
+        if (!refreshToken) {
+            return res.status(403).json({ message: 'Refresh token not valid' });
+        }
+
+        // Verify the refresh token
+        jwt.verify(refreshToken, config.jwt_key, (err: any, user: any) => {
+            if (err) return res.status(403).json({ message: 'Forbidden' });
+
+            console.log(err, '-----------', user)
+            console.log('refresh token')
+            // Create a new access token
+            const accessToken = jwt.sign({ id: user.id, email: user.email }, config.jwt_key, { expiresIn: '15m' });
+
+            res.json({ accessToken });
+        });
+    } catch (error) {
+
+    }
+},
+
+
+
+
   resetPassword: async (req: Request, res: Response) => {
     try {
       const data = req.body;

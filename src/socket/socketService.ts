@@ -27,13 +27,33 @@ export const initializeSocket = (server: HttpServer) => {
 
     io.on('connection', (socket) => {
         console.log('socket server started ->', socket.id);
+        
 
         socket.on('userConnected', (userId) => {
-            console.log(userId)
+            console.log(userId," user id for userConnected#################")
             onlineUsers.set(userId, socket.id);
             console.log(`User ${userId} connected with socket ${socket.id}`);
             console.log('Current online users:', Array.from(onlineUsers.entries()));
         });
+        // socket.emit("emitUserOnline",(socket.id)=>{
+        //     for (const [userId, id] of onlineUsers.entries()) {
+        //         if (id === socket.id) {
+        //             return userId;
+        //         }
+        // })
+        const checkOnline= ()=> {
+            let foundUserId = null;
+            for (const [userId, id] of onlineUsers.entries()) {
+                if (id === socket.id) {
+                    foundUserId = userId;
+                    break; // Exit the loop once the userId is found
+                }
+            }
+            return foundUserId; // Ensure the function returns the userId
+        }
+        socket.broadcast.emit("emitUserOnline",checkOnline );
+        const msg="hiii"
+        // socket.broadcast.emit("emitUserOnline",  {msg});
 
         socket.on('joinConversation', (chatId) => {
             socket.join(chatId);
@@ -46,12 +66,35 @@ export const initializeSocket = (server: HttpServer) => {
             socket.broadcast.emit('onUserTyping')
 
         })
-        socket.on('userOnline', (id) => {
-            console.log('user is online ', id);
+        socket.on('emitUserOnline', (id) => {
+            console.log('user in online ', id);
             const receiverSocketId = onlineUsers.get(id) || '';
-            socket.broadcast.emit('onUserOnline')
+            console.log('in status purpose:', Array.from(onlineUsers.entries()));
+            if(receiverSocketId){
+                const online="online"
+                socket.broadcast.emit('onUserOnline',online)
+            }else{
+                const offline='offline'
+                socket.broadcast.emit('onUserOnline',offline)
+            }
+            
 
         })
+
+        // socket.on('userOffline', (id) => {
+        //     console.log('user is offline ', id);
+        //     onlineUsers.delete(id);
+        //     console.log('in status purpose:', Array.from(onlineUsers.entries()));
+        //     // if(receiverSocketId){
+        //     //     const online="online"
+        //     //     socket.broadcast.emit('onUserOnline',online)
+        //     // }else{
+        //     //     const offline='offline'
+        //     //     socket.broadcast.emit('onUserOnline',offline)
+        //     // }
+            
+
+        // })
 
         socket.on('sendMessage', async (message) => {
             console.log('Received message:', message);
@@ -123,6 +166,7 @@ export const initializeSocket = (server: HttpServer) => {
 
             for (const [userId, socketId] of onlineUsers.entries()) {
                 if (socketId === socket.id) {
+                    socket.broadcast.emit("userOffline",userId)
                     onlineUsers.delete(userId);
                     console.log(`Removed user ${userId} from online users`);
                     break;
@@ -147,7 +191,8 @@ export const sendNotification = async (notificationData: any) => {
 
     const notification = await messageRabbitMqClient.produce(notificationData, 'save-notification')
     console.log(notification," notification response in socket*&********************")
- io.emit('newNotification', notificationData);
+    console.log(onlineUsers," online sockets presents$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+//  io.emit('newNotification', notificationData);
     if (receiverSocketId) {
         io.to(receiverSocketId).emit('newNotification', notificationData);
     } else {

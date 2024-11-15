@@ -263,7 +263,7 @@ export const messageController = {
             const operation = 'update-Notification';
             const id = req.query.id;
             const result = await messageRabbitMqClient.produce(id, operation);
-            return res.status(200).json(res);
+            return res.status(200).json({success:true});
         } catch (error) {
             logger.error("Error occurred while notification is read images in messages", { error });
             res.status(500).json({ error: "Error occurred while saving images in messages" });

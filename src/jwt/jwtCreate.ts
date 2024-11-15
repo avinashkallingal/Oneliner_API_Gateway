@@ -14,9 +14,14 @@ export const generateToken = (user: userPayload) => {
     }
 
     const options = {
-        expiresIn: '1h'
+        expiresIn: '15m'
     }
+    // 1s
 
-    return jwt.sign(payload, config.jwt_key as string, options);
+    const accessToken = jwt.sign(payload, config.jwt_key as string, options);
+    const refreshToken = jwt.sign(payload, config.jwt_key as string, { expiresIn: '7d' });
+    return { accessToken, refreshToken }
+
+    // return jwt.sign(payload, config.jwt_key as string, options);
 
 }
