@@ -249,7 +249,7 @@ export const userController = {
 
         // res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });//
         result.token = token;
-        result.refreshToken = refreshToken;
+        // result.refreshToken = refreshToken;
 
         //
         return res.json(result);
@@ -277,6 +277,25 @@ export const userController = {
       }
     } catch (error) {
       console.log("error in resetPassword --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+  
+  searchUsers: async (req: Request, res: Response) => {
+    // Implement logic here
+    const data = typeof req.query.q === 'string' ? req.query.q.toLowerCase() : '';
+    // const data = req.query.q as string;
+    console.log(data, "search input string");
+    const operation = "user_search";
+    try {
+      const result: any = await userRabbitMqClient.produce(data, operation);
+      if (result.success) {
+        return res.json({ success: true, result });
+      } else {
+        return res.json({ success: false, result });
+      }
+    } catch (error) {
+      console.log("error in search user --> ", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },

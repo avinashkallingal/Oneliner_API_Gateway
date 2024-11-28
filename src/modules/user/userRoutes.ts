@@ -25,6 +25,8 @@ userRoutes.put('/follow',authencticateToken,userController.follow)
 userRoutes.put('/unFollow',authencticateToken,userController.unFollow)
 userRoutes.post('/contacts',authencticateToken,userController.contactsFetch)
 
+userRoutes.get('/search',authencticateToken,userController.searchUsers)
+
 // refresh token verification
 userRoutes.post('/refresh-token', userController.refreshToken)
 
