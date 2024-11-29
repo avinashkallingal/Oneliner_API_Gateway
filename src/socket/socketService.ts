@@ -181,7 +181,8 @@ export const initializeSocket = (server: HttpServer) => {
     })
 
     socket.on("callUser", (data) => {
-      io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+      const receiverSocketId = onlineUsers.get(data.userToCall) || "";
+      io.to(receiverSocketId).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
     })
   
     socket.on("answerCall", (data) => {
