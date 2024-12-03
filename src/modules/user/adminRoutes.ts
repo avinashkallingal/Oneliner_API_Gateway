@@ -5,8 +5,9 @@ const adminRoutes = express.Router();
 
 
 adminRoutes.get("/userList",adminController.userList);
-adminRoutes.post("/userBlock",authencticateTokenMiddleware,adminController.userBlock);
+adminRoutes.post("/userBlock",adminController.userBlock);
 adminRoutes.post("/login",adminController.adminLogin);
+// adminRoutes.get("/getDashboardData",adminController.userList);
 
 
 export { adminRoutes }

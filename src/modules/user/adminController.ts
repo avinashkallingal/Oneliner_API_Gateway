@@ -14,6 +14,8 @@ export const adminController = {
       userData: resuslt,
     });
   },
+
+  
   //userblock
   userBlock: async (req: Request, res: Response) => {
     // Implement logout logic here

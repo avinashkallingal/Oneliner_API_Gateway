@@ -26,6 +26,7 @@ postRoutes.post('/likePost',authencticateToken,postController.likePost)
 postRoutes.post('/deletePost',authencticateToken,postController.deletePost)
 postRoutes.post("/addComment",authencticateToken,postController.addComment)
 postRoutes.put("/reportPost",postController.reportPost)
+
 postRoutes.get("/adminPostData",postController.adminPostData)
 postRoutes.get('/admin/removePost', postController.removePostAdmin)
 
