@@ -5,6 +5,7 @@ import authencticateToken from '../../middleware/authMiddleware';
 
 
 const userRoutes = express.Router();
+const authMiddleware = authencticateToken({ role: 'user' });
 
 userRoutes.get('/', (req: Request, res: Response) => {
     
@@ -18,14 +19,14 @@ userRoutes.post('/logout', userController.logout);
 userRoutes.post('/verifyEmail',userController.verifyEmail);
 userRoutes.post('/resetPassword',userController.resetPassword);
 userRoutes.post('/googleLogin',userController.googleLogin)
-userRoutes.post('/fetchUserData',authencticateToken,userController.fetchUserData)
+userRoutes.post('/fetchUserData',authMiddleware,userController.fetchUserData)
 // edit in userProfile
-userRoutes.put('/userProfile/update/:id',authencticateToken, upload.single('avatar'), userController.editUserProfile)
-userRoutes.put('/follow',authencticateToken,userController.follow)
-userRoutes.put('/unFollow',authencticateToken,userController.unFollow)
-userRoutes.post('/contacts',authencticateToken,userController.contactsFetch)
+userRoutes.put('/userProfile/update/:id',authMiddleware, upload.single('avatar'), userController.editUserProfile)
+userRoutes.put('/follow',authMiddleware,userController.follow)
+userRoutes.put('/unFollow',authMiddleware,userController.unFollow)
+userRoutes.post('/contacts',authMiddleware,userController.contactsFetch)
 
-userRoutes.get('/search',authencticateToken,userController.searchUsers)
+userRoutes.get('/search',authMiddleware,userController.searchUsers)
 
 // refresh token verification
 userRoutes.post('/refresh-token', userController.refreshToken)

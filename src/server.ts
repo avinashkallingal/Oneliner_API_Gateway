@@ -8,6 +8,8 @@ import { adminRoutes } from './modules/user/adminRoutes';
 import { postRoutes } from './modules/post/postRoutes';
 import { messageRouter } from './modules/message/messageRoutes';
 import { initializeSocket } from './socket/socketService';
+import { HttpStatus } from './enum/StatusCode';
+import morgan from 'morgan'
 
 import config from './config/config';
 import dotenv from 'dotenv';
@@ -21,13 +23,16 @@ const corsOptions = {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
     preflightContinue: false,
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: HttpStatus.NO_CONTENT
 };
 
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors(corsOptions));
+
+// Use Morgan middleware with the desired format
+app.use(morgan('dev')); // 'dev' is a popular format for development
 
 
 app.use('/', userRoutes)

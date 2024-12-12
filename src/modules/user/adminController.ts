@@ -50,10 +50,12 @@ export const adminController = {
       const token = generateToken({
         id: result.admin_data._id,
         email: result.admin_data.email,
+        role:"admin",
       });
       const refreshToken = generateToken({
         id: result.admin_data._id,
         email: result.admin_data.email,
+        role:"admin",
       });
 
       // res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });

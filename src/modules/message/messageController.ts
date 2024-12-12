@@ -4,15 +4,16 @@ import userRabbitMqClient from '../user/rabbitMQ/client';
 import logger from "../../utils/logger";
 import { promises } from "dns";
 import { read } from "fs";
+import { HttpStatus } from "../../enum/StatusCode";
 
 interface Chat {
-    participants: any;
+    participants: string[];
     _id: string;
     UserId: string;
 }
 
 interface User {
-    id: any;
+    id: string;
     _id: string;
 }
 
@@ -30,7 +31,7 @@ export const messageController = {
         try {
             const userId = req.query.userId as string;
             if (!userId) {
-                return res.status(400).json({ error: "UserId is missing" });
+                return res.status(HttpStatus.BAD_REQUEST).json({ error: "UserId is missing" });
             }
 
             const operation = 'getConvData';
@@ -58,9 +59,9 @@ export const messageController = {
 
                     console.log()
 
-                    res.status(200).json({ success: true, data: combinedData });
+                    res.status(HttpStatus.OK).json({ success: true, data: combinedData });
                 } else {
-                    res.status(200).json({
+                    res.status(HttpStatus.OK).json({
                         success: true,
                         data: result.data,
                         message: "Chats fetched, but user data not available",
@@ -71,7 +72,7 @@ export const messageController = {
             }
         } catch (error) {
             logger.error("Error occurred while fetching conversation users", { error });
-            res.status(500).json({ error: "Error occurred while fetching conversation users" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: "Error occurred while fetching conversation users" });
         }
 
     },
@@ -81,16 +82,17 @@ export const messageController = {
     getChatId: async (req: Request, res: Response) => {
         try {
             const userId = req.query.userId as string;
-            const recievedId = req.query.recieverId as string;
+            const recievedId = req.query.receiverId as string;
             if (!userId || !recievedId) {
-                return res.status(400).json({ error: "UserId or receiver id is missing" });
+                console.log("UserId or receiver id is missing")
+                return res.status(HttpStatus.BAD_REQUEST).json({ error: "UserId or receiver id is missing" });
             }
             const operation = 'get-chatId';
             const response = await messageRabbitMqClient.produce({ userId, recievedId }, operation);
             return res.json(response);
         } catch (error) {
             logger.error("Error occurred while fetching chat ID", { error });
-            res.status(500).json({ error: "Error occurred while fetching chat ID" });
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: "Error occurred while fetching chat ID" });
         }
     },
 

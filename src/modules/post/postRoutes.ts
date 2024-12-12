@@ -6,6 +6,9 @@ import { postController } from './postController';
 import multer from 'multer';
 const postRoutes = express.Router();
 
+
+const authMiddleware = authencticateToken({ role: 'user' });
+
 postRoutes.post('/addPost', upload.fields([
     { name: 'photoFile', maxCount: 5 },  // Handling an array of images 
     { name: 'pdfFile', maxCount: 1 }     // Handling a single PDF file
@@ -17,14 +20,14 @@ postRoutes.post('/addPost', upload.fields([
   ]),postController.editPost)
 
 // postRoutes.post('/addPost', authencticateToken, upload.array('files'), postController.addPost);
-postRoutes.get('/getPosts',authencticateToken, postController.getAllPosts)
-postRoutes.get('/getUserPosts', authencticateToken,postController.getUserPosts)
-postRoutes.get('/getPost',authencticateToken, postController.getPost)
-postRoutes.post('/pdfUrlFetch',authencticateToken,postController.pdfUrlFetch)
-postRoutes.post('/imageUrlFetch',authencticateToken,postController.imageUrlFetch)
-postRoutes.post('/likePost',authencticateToken,postController.likePost)
-postRoutes.post('/deletePost',authencticateToken,postController.deletePost)
-postRoutes.post("/addComment",authencticateToken,postController.addComment)
+postRoutes.get('/getPosts',authMiddleware, postController.getAllPosts)
+postRoutes.get('/getUserPosts', authMiddleware,postController.getUserPosts)
+postRoutes.get('/getPost',authMiddleware, postController.getPost)
+postRoutes.post('/pdfUrlFetch',authMiddleware,postController.pdfUrlFetch)
+postRoutes.post('/imageUrlFetch',authMiddleware,postController.imageUrlFetch)
+postRoutes.post('/likePost',authMiddleware,postController.likePost)
+postRoutes.post('/deletePost',authMiddleware,postController.deletePost)
+postRoutes.post("/addComment",authMiddleware,postController.addComment)
 postRoutes.put("/reportPost",postController.reportPost)
 
 postRoutes.get("/adminPostData",postController.adminPostData)

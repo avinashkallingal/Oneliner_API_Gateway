@@ -97,6 +97,7 @@ export const initializeSocket = (server: HttpServer) => {
       console.log("Received message:", message);
 
       try {
+        console.log(message," messages in on sendMessage socket1")
         const operation = "save-message";
         const response: any = await messageRabbitMqClient.produce(
           message,

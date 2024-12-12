@@ -3,14 +3,16 @@ import config from '../config/config';
 
 interface userPayload {
     id: string,
-    email: string
+    email: string,
+    role:string|null,
 }
 
 export const generateToken = (user: userPayload) => {
 
     const payload = {
         id: user.id,
-        email: user.email
+        email: user.email,
+        role:user.role,
     }
 
     const options = {

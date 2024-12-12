@@ -139,6 +139,7 @@ export const userController = {
       const token = generateToken({
         id: result.user_data._id,
         email: result.user_data.email,
+        role:"user",
       });
       // const refreshToken = generateToken({
       //   id: result.user_data._id,
@@ -197,8 +198,8 @@ export const userController = {
             console.log(err, '-----------', user)
             console.log('refresh token')
             // Create a new access token
-            const accessToken = jwt.sign({ id: user.id, email: user.email }, config.jwt_key, { expiresIn: '15m' });
-
+            const accessToken = jwt.sign({ id: user.id, email: user.email,role:"user" }, config.jwt_key, { expiresIn: '15m' });
+          console.log(accessToken," access token in api gateway")
             res.json({ accessToken });
         });
     } catch (error) {
@@ -241,10 +242,12 @@ export const userController = {
         const token = generateToken({
           id: result.user_data._id,
           email: result.user_data.email,
+          role:"user"
         });
         const refreshToken = generateToken({
           id: result.user_data._id,
           email: result.user_data.email,
+          role:'user'
         });
 
         // res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });//
