@@ -19,7 +19,7 @@ const onlineUsers = new Map<string, string>();
 export const initializeSocket = (server: HttpServer) => {
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "http://oneliner.space",
       methods: ["POST", "GET"],
       credentials: true,
     },
@@ -216,7 +216,7 @@ export const initializeSocket = (server: HttpServer) => {
 //     }
 // };
 
-export const sendNotification = async (notificationData: any) => {
+export const sendNotification = async (notificationData) => {
   console.log("sendNotification triggered in socketio.", notificationData);
   const receiverSocketId = onlineUsers.get(notificationData.senderId);
 

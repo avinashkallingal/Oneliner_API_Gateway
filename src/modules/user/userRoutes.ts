@@ -7,9 +7,9 @@ import authencticateToken from '../../middleware/authMiddleware';
 const userRoutes = express.Router();
 const authMiddleware = authencticateToken({ role: 'user' });
 
-userRoutes.get('/', (req: Request, res: Response) => {
+userRoutes.get('/check', (req: Request, res: Response) => {
     
-    res.json({ success: true, message: 'sample test' })
+    res.status(200).json({ success: true, message: 'sample test' })
 })
 userRoutes.post('/register', userController.register);
 userRoutes.post('/verifyOtp', userController.otp);

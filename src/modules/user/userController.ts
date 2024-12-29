@@ -344,7 +344,7 @@ export const userController = {
     // Implement logic here
   
     const data = req.body;
-    console.log(req.body, "body in contact fetch api gateway");
+    // console.log(req.body, "body in contact fetch api gateway");
         const operation = "contacts_fetch";
     try {
       const result: any = await userRabbitMqClient.produce(data, operation);
