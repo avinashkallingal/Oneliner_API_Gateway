@@ -2,10 +2,26 @@ import { Request, Response } from "express";
 import postRabbitMqClient from "./rabbitMQ/client";
 import userRabbitMqClient from "../../modules/user/rabbitMQ/client";
 import { sendNotification } from '../../socket/socketService'
+import { clearScreenDown } from "readline";
+import { IPost } from "../../interfaces/Ipost";
+import { IUser } from "../../interfaces/Iuser";
 
 interface Post {
   _id: string;
   userId: string;
+
+}
+
+interface MyDynamicObject {
+  [key: string]: any;
+}
+
+interface likeUsers{
+  id: string;
+  userId: string;
+  success:boolean;
+  message:string;
+  like_data:[IPost]
 }
 
 interface User {
@@ -13,11 +29,20 @@ interface User {
   _id: string;
 }
 
+interface Like {
+  userId: string;
+  postUser: string;
+  _id: string;
+  createdAt: string; // ISO 8601 date string
+}
+
 interface RabbitMQResponse<T> {
   success: boolean;
   message: string;
   data?: T;
   like?: boolean;
+  like_data?:IPost
+  likes:Like[]
 }
 
 interface data {
@@ -480,6 +505,56 @@ export const postController = {
       }
     } catch (error) {
       console.error("Error in getUserPosts:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
+    }
+  },
+
+  likeList: async (req: Request, res: Response) => {
+    try {
+      const data: any = req.query.postId;
+      const operation = "fetch-like-list";
+      const result = (await postRabbitMqClient.produce(
+        data,
+        operation
+      )) as RabbitMQResponse<[]>;
+      console.log(result," result got in likelist))))))))))))))")
+      if (result.success) {
+        const likeList=result.like_data.likes
+        console.log(likeList,"like list in api like list function %%%%%%%%%%%%%%%")
+
+
+      // Fetch user details for each like
+      const userDetails = await Promise.all(
+        likeList.map(async (like:any) => {
+          const userOperation = "fetch-user-for-inbox";
+          const userResult:any = await userRabbitMqClient.produce(
+            { userId: like.userId },
+            userOperation
+          ) as RabbitMQResponse<IUser>;
+          console.log(userResult," user result in user details for like")
+          if (userResult.success) {
+            return {
+              ...userResult.user_data, // User data from RabbitMQ
+              likeInfo: like, // Original like information
+            };
+          } else {
+            // console.error(`Failed to fetch user details for userId: ${like.userId}`);
+            return null; // Handle failed user fetches gracefully
+          }
+        })
+      );
+
+        
+        return res.status(200).json({ success: true, message: "got like list",like_data:userDetails });
+      } else {
+        return res
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    } catch (error) {
+      console.error("Error in likeListPost:", error);
       res
         .status(500)
         .json({ success: false, message: "Internal server error" });

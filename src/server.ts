@@ -18,7 +18,7 @@ dotenv.config()
 const app = express();
 
 const corsOptions = {
-    origin: 'https://oneliner.space',
+    origin: process.env.FRONTEND_URL,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type,Authorization',

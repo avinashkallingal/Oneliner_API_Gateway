@@ -32,6 +32,7 @@ postRoutes.put("/reportPost",postController.reportPost)
 
 postRoutes.get("/adminPostData",postController.adminPostData)
 postRoutes.get('/admin/removePost', postController.removePostAdmin)
+postRoutes.get('/likeList',postController.likeList)
 
 
 

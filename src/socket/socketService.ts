@@ -19,7 +19,7 @@ const onlineUsers = new Map<string, string>();
 export const initializeSocket = (server: HttpServer) => {
   io = new Server(server, {
     cors: {
-      origin: "http://oneliner.space",
+      origin: process.env.FRONTEND_URL,
       methods: ["POST", "GET"],
       credentials: true,
     },
