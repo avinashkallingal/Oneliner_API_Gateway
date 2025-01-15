@@ -26,6 +26,9 @@ userRoutes.put('/follow',authMiddleware,userController.follow)
 userRoutes.put('/unFollow',authMiddleware,userController.unFollow)
 userRoutes.post('/contacts',authMiddleware,userController.contactsFetch)
 
+userRoutes.get('/savePost',authMiddleware,userController.savePost)
+userRoutes.get('/getSavedPosts',authMiddleware,userController.getSavedPosts)
+
 userRoutes.get('/search',authMiddleware,userController.searchUsers)
 
 // refresh token verification

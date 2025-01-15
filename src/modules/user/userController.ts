@@ -4,6 +4,14 @@ import { generateToken } from "../../jwt/jwtCreate";
 import rabbitMQConfig from "../../config/rabbitMQconfig";
 import config from '../../config/config';
 import jwt from 'jsonwebtoken';
+import postRabbitMqClient from "../post/rabbitMQ/client";
+import { IPost } from "../../interfaces/Ipost";
+interface RabbitMQResponse<T> {
+  success: boolean;
+  message: string;
+  user_ata?: T;
+
+  }
 
 export const userController = {
   // Define memory storage object
@@ -299,6 +307,100 @@ export const userController = {
       }
     } catch (error) {
       console.log("error in search user --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  savePost: async (req: Request, res: Response) => {
+    try {
+      const data = req.query;
+      console.log(data, " save post data here^^^^^^^^^^^^^^^^^^^");
+      const operation = "save_post";
+      const result: any = await userRabbitMqClient.produce(data, operation);
+      if (!result.success) {
+        console.log("error in reset");
+        return res.json(result);
+        // return res.status(401).json({ error: 'Login failed' });
+      } else {
+        console.log("post saved");
+        return res.json(result);
+      }
+    } catch (error) {
+      console.log("error in save post --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  getSavedPosts: async (req: Request, res: Response) => {
+    try {
+      const data = req.query;
+      console.log(data, " get save post data");
+      const operation = 'fetch-user-for-inbox';
+      const result: any = await userRabbitMqClient.produce(data, operation);
+    
+      if (!result.success) {
+        console.log("error in fetching data ");
+        return res.json(result);
+        // return res.status(401).json({ error: 'Login failed' });
+      } else {
+        console.log(result.user_data.savedPost,"   post saved12121212121212")
+//////////////
+   // Fetch user details for each like
+      const posts = await Promise.all(
+        result.user_data.savedPost.map(async (post:any) => {
+          const postOperation = 'get-post';
+          const postResult:any = await postRabbitMqClient.produce(
+            { postId: post },
+            postOperation
+          ) as RabbitMQResponse<IPost>;
+          console.log(postResult," post result in user details for saved post fetch")
+          // if (postResult.success) {
+          //   return {
+          //     ...postResult.data // User data from RabbitMQ
+            
+          //   };
+          // } else {
+          //   // console.error(`Failed to fetch user details for userId: ${like.userId}`);
+          //   return null; // Handle failed user fetches gracefully
+          // }
+
+
+          // if (postResult.success) {
+          //   // Access the first key dynamically if the result has numeric keys
+          //   const postData = postResult.data['0'] || postResult.data;
+          //   return {
+          //     ...postData // Extract the actual data
+          //   };
+          // } else {
+          //   // Handle failed user fetches gracefully
+          //   return null;
+          // }
+
+          if (postResult.success) {
+            // Access the first key dynamically if the result has numeric keys
+            const postData = postResult.data['0'] || Object.values(postResult.data)[0] || postResult.data;
+      
+            return {
+              ...postData, // Extract the actual data
+            };
+          } else {
+            // Handle failed post fetches gracefully
+            return null;
+          }
+
+
+        })
+      );
+/////////////////
+
+ console.log(posts," post result in report^^^^^^^^^^^^^^^^^^^^")
+
+
+        // return res.json(posts);
+        return res.json({ success: true,message:"successfully got saved posts" ,posts:posts });
+      }
+    } catch (error) {
+      console.log("error in get post  --> ", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },
