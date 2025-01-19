@@ -52,6 +52,7 @@ export const initializeSocket = (server: HttpServer) => {
       }
       return foundUserId; // Ensure the function returns the userId
     };
+    console.log(checkOnline," return from checkonline funtion")
     socket.broadcast.emit("emitUserOnline", checkOnline());
     const msg = "hiii";
     // socket.broadcast.emit("emitUserOnline",  {msg});

@@ -34,6 +34,9 @@ userRoutes.get('/search',authMiddleware,userController.searchUsers)
 // refresh token verification
 userRoutes.post('/refresh-token', userController.refreshToken)
 
+//followers data fetch
+userRoutes.get('/fetchFollowers',authMiddleware,userController.getFollowersData)
+
 
 // userRoutes.post('/resetPassword',(req,res)=>{
 // console.log("password came",req.body)
