@@ -7,11 +7,12 @@ export const adminController = {
   userList: async (req: Request, res: Response) => {
     const operation = "user_list";
     const data = req.body;
-    const resuslt = await userRabbitMqClient.produce(data, operation);
+    const result:any = await userRabbitMqClient.produce(data, operation);
+    console.log(result.data,"result in admin api gateway%%%%%%%%%%%")
     return res.json({
       success: true,
       message: "user data got!!!!!",
-      userData: resuslt,
+      userData: result,
     });
   },
 

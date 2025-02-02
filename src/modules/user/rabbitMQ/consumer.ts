@@ -1,3 +1,24 @@
+// import { Channel, ConsumeMessage } from "amqplib";
+// import { EventEmitter } from "events";
+
+// export default class Consumer {
+//     constructor(private channel: Channel, private replyQueueName: string, private eventEmitter: EventEmitter) {}
+
+//     async consumeMessage() {
+//         console.log(`Consuming messages from queue: ${this.replyQueueName}`);
+//         this.channel.consume(this.replyQueueName, (message: ConsumeMessage | null) => {
+//             if (message) {
+//                 // console.log('Message received in consumeMessage:', message.content.toString());
+//                 this.eventEmitter.emit(message.properties.correlationId.toString(), message);
+//                 this.channel.ack(message); // Acknowledge the message
+//             } else {
+//                 console.log('No message received.');
+//             }
+//         }, { noAck: false });
+//     }
+// }
+
+
 import { Channel, ConsumeMessage } from "amqplib";
 import { EventEmitter } from "events";
 
@@ -5,14 +26,14 @@ export default class Consumer {
     constructor(private channel: Channel, private replyQueueName: string, private eventEmitter: EventEmitter) {}
 
     async consumeMessage() {
-        console.log(`Consuming messages from queue: ${this.replyQueueName}`);
+        console.log(`Consuming messages from queue for user: ${this.replyQueueName}`);
         this.channel.consume(this.replyQueueName, (message: ConsumeMessage | null) => {
             if (message) {
-                // console.log('Message received in consumeMessage:', message.content.toString());
+                // console.log('Message received in consumeMessage user:', message.content.toString());
                 this.eventEmitter.emit(message.properties.correlationId.toString(), message);
                 this.channel.ack(message); // Acknowledge the message
             } else {
-                console.log('No message received.');
+                console.log('No message received in user que.');
             }
         }, { noAck: false });
     }

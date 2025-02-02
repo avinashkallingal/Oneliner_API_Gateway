@@ -36,6 +36,7 @@ userRoutes.post('/refresh-token', userController.refreshToken)
 
 //followers data fetch
 userRoutes.get('/fetchFollowers',authMiddleware,userController.getFollowersData)
+userRoutes.get('/fetchFollowings',authMiddleware,userController.getFollowingsData)
 
 
 // userRoutes.post('/resetPassword',(req,res)=>{

@@ -36,25 +36,30 @@ export const initializeSocket = (server: HttpServer) => {
       console.log(`User ${userId} connected with socket ${socket.id}`);
       console.log("Current online users:", Array.from(onlineUsers.entries()));
     });
+
+
+    
     // socket.emit("emitUserOnline",(socket.id)=>{
     //     for (const [userId, id] of onlineUsers.entries()) {
     //         if (id === socket.id) {
     //             return userId;
     //         }
     // })
-    const checkOnline = () => {
-      let foundUserId = null;
-      for (const [userId, id] of onlineUsers.entries()) {
-        if (id === socket.id) {
-          foundUserId = userId;
-          break; // Exit the loop once the userId is found
-        }
-      }
-      return foundUserId; // Ensure the function returns the userId
-    };
-    console.log(checkOnline," return from checkonline funtion")
-    socket.broadcast.emit("emitUserOnline", checkOnline());
-    const msg = "hiii";
+
+    // const checkOnline = () => {
+    //   let foundUserId = null;
+    //   for (const [userId, id] of onlineUsers.entries()) {
+    //     if (id === socket.id) {
+    //       foundUserId = userId;
+    //       break; // Exit the loop once the userId is found
+    //     }
+    //   }
+    //   return foundUserId; // Ensure the function returns the userId
+    // };
+    // console.log(checkOnline," return from checkonline funtion")
+    // socket.broadcast.emit("emitUserOnline", checkOnline());
+    // const msg = "hiii";
+
     // socket.broadcast.emit("emitUserOnline",  {msg});
 
     socket.on("joinConversation", (chatId) => {
@@ -67,16 +72,23 @@ export const initializeSocket = (server: HttpServer) => {
       const receiverSocketId = onlineUsers.get(id) || "";
       socket.broadcast.emit("onUserTyping");
     });
-    socket.on("emitUserOnline", (id) => {
-      console.log("user in online ", id);
-      const receiverSocketId = onlineUsers.get(id) || "";
-      console.log("in status purpose:", Array.from(onlineUsers.entries()));
+
+    socket.on("emitUserOnline", (data) => {
+      const { recieverId, senderSocketId } = data;
+      console.log("user in online ", recieverId);
+      const receiverSocketId = onlineUsers.get(recieverId) || "";
+      // const senderSocketId = onlineUsers.get(senderId) || "";
+      // console.log("in status purpose:", Array.from(onlineUsers.entries())," online socket id:",receiverSocketId," sender socketid:",senderSocketId);
+      const online = true;
+      io.to(senderSocketId).emit("onUserOnline", online);
       if (receiverSocketId) {
-        const online = "online";
-        socket.broadcast.emit("onUserOnline", online);
-      } else {
-        const offline = "offline";
-        socket.broadcast.emit("onUserOnline", offline);
+        const online = true;
+        // socket.emit("onUserOnline", online);
+        io.to(senderSocketId).emit("onUserOnline", online);
+      }
+       else {
+        const online = false;
+        io.to(senderSocketId).emit("onUserOnline", online);
       }
     });
 

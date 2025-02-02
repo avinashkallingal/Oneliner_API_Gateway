@@ -169,7 +169,7 @@ export const postController = {
 
   getAllPosts: async (req: Request, res: Response) => {
     try {
-      console.log(req.query.genre,"get all post+++++++++++++++++++++++++");
+      console.log(req.query.genre,req.query.page,"get all post???????????????");
       const page = req.query.page;
       const genre=req.query.genre
       const operation = "get-all-posts";

@@ -270,7 +270,7 @@ export const userController = {
         return res.json(result);
       }
     } catch (error) {
-      console.log("error in resetPassword --> ", error);
+      console.log("error in google login --> ", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -288,7 +288,7 @@ export const userController = {
         return res.json({ success: false, result });
       }
     } catch (error) {
-      console.log("error in resetPassword --> ", error);
+      console.log("error in fetchUserData --> ", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -432,6 +432,56 @@ export const userController = {
   },
 
 
+  getFollowingsData: async (req: Request, res: Response) => {
+    try {
+      const data = req.query;
+      console.log(data, " get followings data%%%%%%%%%");
+      const operation = 'fetch-user-for-inbox';
+      const result: any = await userRabbitMqClient.produce(data, operation);  
+    
+
+   // Fetch user details for each like
+      console.log(result," result got in followes data fuction ))))))))))))))")
+           if (result.success) {
+             const followingsList=result.user_data.followings
+             console.log(followingsList,"like list in api like list function %%%%%%%%%%%%%%%")
+     
+     
+           // Fetch user details for each like
+           const userDetails = await Promise.all(
+            followingsList.map(async (following:any) => {
+               const userOperation = "fetch-user-for-inbox";
+               const userResult:any = await userRabbitMqClient.produce(
+                 { userId: following },
+                 userOperation
+               ) as RabbitMQResponse<IUser>;
+               console.log(userResult," user result in user details for like")
+               if (userResult.success) {
+                 return {
+                   ...userResult.user_data, // User data from RabbitMQ
+                   followInfo: following, // Original like information
+                 };
+               } else {
+                 // console.error(`Failed to fetch user details for userId: ${like.userId}`);
+                 return null; // Handle failed user fetches gracefully
+               }
+             })
+           );
+     
+             
+             return res.status(200).json({ success: true, message: "got like list",followings_data:userDetails });
+           } else {
+             return res
+               .status(500)
+               .json({ success: false, message: "Internal server error" });
+           }
+    } catch (error) {
+      console.log("error in get post  --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+
 
   follow: async (req: Request, res: Response) => {
     // Implement logic here
@@ -446,7 +496,7 @@ export const userController = {
         return res.json({ success: false, result });
       }
     } catch (error) {
-      console.log("error in resetPassword --> ", error);
+      console.log("error in following --> ", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -464,7 +514,7 @@ export const userController = {
         return res.json({ success: false, result });
       }
     } catch (error) {
-      console.log("error in resetPassword --> ", error);
+      console.log("error in unfollowing --> ", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },
@@ -484,7 +534,7 @@ export const userController = {
         return res.json({ success: false, result });
       }
     } catch (error) {
-      console.log("error in resetPassword --> ", error);
+      console.log("error in contact fetch --> ", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   },
