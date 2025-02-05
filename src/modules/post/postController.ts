@@ -221,12 +221,12 @@ export const postController = {
   },
   getUserPosts: async (req: Request, res: Response) => {
     try {
-      console.log("hiiiiiiiiii+++++++++user posts in api gateway");
-      const userId = req.query.id;
-      console.log(userId, "hiiiiiiiiii+++++++++user posts in api gateway");
-      const userOperation = "get-user-posts";
+      console.log("hiiiiiiiiii+++++++++ tag posts in api gateway");
+      const tag = req.query.tag;
+      console.log(tag, "hiiiiiiiiii+++++++++user posts in api gateway");
+      const userOperation = "get-tag-posts";
       const postResponse = (await postRabbitMqClient.produce(
-        { userId },
+        tag ,
         userOperation
       )) as RabbitMQResponse<Post[]>;
       if (postResponse.success) {
@@ -281,12 +281,13 @@ export const postController = {
         { data },
         operation
       )) as RabbitMQResponse<Post[]>;
+      console.log(commentResposnse," rabit mq response in api gateway for comment2222222222222")
       if (commentResposnse.success) {
         return res
           .status(200)
           .json({
             success: true,
-            message: "comment added successfully",
+            message: "comment added successfully avi",
             data: commentResposnse.data,
           });
       } else {

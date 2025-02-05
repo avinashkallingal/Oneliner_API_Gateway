@@ -22,6 +22,7 @@ postRoutes.post('/addPost', upload.fields([
 // postRoutes.post('/addPost', authencticateToken, upload.array('files'), postController.addPost);
 postRoutes.get('/getPosts',authMiddleware, postController.getAllPosts)
 postRoutes.get('/getUserPosts', authMiddleware,postController.getUserPosts)
+postRoutes.get('/getTagPosts', authMiddleware,postController.getUserPosts)
 postRoutes.get('/getPost',authMiddleware, postController.getPost)
 postRoutes.post('/pdfUrlFetch',authMiddleware,postController.pdfUrlFetch)
 postRoutes.post('/imageUrlFetch',authMiddleware,postController.imageUrlFetch)

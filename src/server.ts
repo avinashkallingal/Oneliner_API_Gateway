@@ -18,7 +18,7 @@ dotenv.config()
 const app = express();
 
 const corsOptions = {
-    origin: "*",
+    origin: "http://localhost:5173",
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
@@ -30,6 +30,8 @@ const corsOptions = {
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors(corsOptions));
+
+app.options('*', cors(corsOptions));
 
 // Use Morgan middleware with the desired format
 app.use(morgan('dev')); // 'dev' is a popular format for development
