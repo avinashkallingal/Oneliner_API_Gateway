@@ -11,6 +11,7 @@ userRoutes.get('/check', (req: Request, res: Response) => {
     
     res.status(200).json({ success: true, message: 'sample test' })
 })
+userRoutes.get('/grpc',userController.test)
 userRoutes.post('/register', userController.register);
 userRoutes.post('/verifyOtp', userController.otp);
 userRoutes.post('/resendOtp', userController.resendOtp);
@@ -39,9 +40,6 @@ userRoutes.get('/fetchFollowers',authMiddleware,userController.getFollowersData)
 userRoutes.get('/fetchFollowings',authMiddleware,userController.getFollowingsData)
 
 
-// userRoutes.post('/resetPassword',(req,res)=>{
-// console.log("password came",req.body)
-// });
 
 
 

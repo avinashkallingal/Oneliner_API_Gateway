@@ -7,6 +7,12 @@ import jwt from 'jsonwebtoken';
 import postRabbitMqClient from "../post/rabbitMQ/client";
 import { IPost } from "../../interfaces/Ipost";
 import { IUser } from "../../interfaces/Iuser";
+import { userClient } from './Grpc/Services/Client';
+
+interface GrpcError extends Error {
+  details?: string;
+}
+
 interface RabbitMQResponse<T> {
   success: boolean;
   message: string;
@@ -41,6 +47,30 @@ export const userController = {
       return res.status(500).json({ error: "Internal server error" });
     }
   },
+
+//   test: async (req: Request, res: Response) => {
+//     try {
+//         const data = req.body;
+//         console.log(data, 'grpc for registeration')
+//         userClient.register(data, (error: GrpcError | null, result: any) => {
+//             if (error) {
+//                 console.error("gRPC error:", error);
+//                 return res.status(500).json({
+//                     success: false,
+//                     message: "Internal Server Error. Please try again later.",
+//                     error: error.details || error.message,
+//                 });
+//             }
+
+//             userController.memoryStorage['user'] = JSON.stringify(result.user_data);
+//             console.log(result," grpc result")
+//             return res.json({ data: result });
+//         })
+//     } catch (error) {
+//         console.log('error in register user --> ', error);
+//         return res.status(500).json({ error: 'Internal server error' });
+//     }
+// },
 
   otp: async (req: Request, res: Response) => {
     try {
@@ -165,6 +195,43 @@ export const userController = {
       return res.status(500).json({ error: "Internal server error" });
     }
   },
+
+
+  test: async (req: Request, res: Response) => {
+    try {
+      const data = req.body;
+      const operation = "user_login";
+
+      const result: any = await userRabbitMqClient.produce(data, operation);
+      console.log(result, "user-login");
+
+      if (!result.success) {
+        console.log("credential not matching");
+        return res.json(result);
+        // return res.status(401).json({ error: 'Login failed' });
+      }
+
+      const token = generateToken({
+        id: result.user_data._id,
+        email: result.user_data.email,
+        role:"user",
+      });
+      // const refreshToken = generateToken({
+      //   id: result.user_data._id,
+      //   email: result.user_data.email,
+      // });
+
+      // res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
+      result.token = token.accessToken;
+      result.refreshToken = token.refreshToken;
+
+      return res.json(result);
+    } catch (error) {
+      console.log("error in userLogin --> ", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  },
+  
 
   verifyEmail: async (req: Request, res: Response) => {
     try {

@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {  
+    rpc Login(LoginUserRequest) returns (LoginUserResponse);
+    rpc Register(RegisterUserRequest) returns (RegisterUserResponse);
+}
+
+
+message User {
+  string _id = 1;
+  string username = 2;
+  string name = 3;
+  string email = 4;
+  string about = 5;
+  string password = 6;
+  string gender = 7;
+  string language = 8;
+  string profilePicture = 9;
+  repeated string followers = 10;
+  repeated string followings = 11;
+  bool isOnline = 12;
+  bool isAdmin = 13;
+  string desc = 14;
+  bool isBlocked = 15;
+  string created_at = 16;
+}
+
+
+
+message LoginUserRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginUserResponse {
+  bool success = 1;
+  string message = 2;
+  User user_data = 3;  
+}
+
+message RegisterUserRequest {
+  string name=1;
+  string email=2;
+  string number=3;
+  string password=4;
+}
+
+message UserRegister {
+  string name=1;
+  string email=2;
+  string number=3;
+  string password=4;
+}
+
+
+message RegisterUserResponse {
+  bool success=1;
+  string message=2;
+  string otp=3;
+  UserRegister user_data=4;
+}
