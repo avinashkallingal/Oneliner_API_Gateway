@@ -10,7 +10,7 @@ const authMiddleware = authencticateToken;
 
 
 messageRouter.post('/createChatId', messageController.getChatId);
-http://localhost:4000/message/createChatId
+//http://localhost:4000/message/createChatId
 messageRouter.get('/getmessages', messageController.getMessage);
 messageRouter.get('/getInboxMessages', messageController.getInboxMessage);
 messageRouter.put('/readUpdate', messageController.readUpdate);
@@ -20,7 +20,7 @@ messageRouter.post('/upload', upload.fields([
       // Handling a single PDF file
   ]),messageController.uploadImage)
   messageRouter.get('/getNotification', messageController.getNotification);
-  messageRouter.get('/readNotification',messageController.readNotification)
+  messageRouter.get('/readNotification',messageController.readNotification);
 
 
 

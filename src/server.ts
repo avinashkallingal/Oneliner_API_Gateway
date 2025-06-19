@@ -18,13 +18,21 @@ dotenv.config()
 const app = express();
 
 const corsOptions = {
-    origin: "http://localhost:5173",
-    credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type,Authorization',
-    preflightContinue: false,
-    optionsSuccessStatus: HttpStatus.NO_CONTENT
+  origin: '*', // Allow all origins
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204 // Or HttpStatus.NO_CONTENT if imported properly
 };
+
+// const corsOptions = {
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     allowedHeaders: 'Content-Type,Authorization',
+//     preflightContinue: false,
+//     optionsSuccessStatus: HttpStatus.NO_CONTENT
+// };
 
 
 app.use(cookieParser());
@@ -33,7 +41,7 @@ app.use(cors(corsOptions));
 
 app.options('*', cors(corsOptions));
 
-// Use Morgan middleware with the desired format
+// Using Morgan middleware with the desired format
 app.use(morgan('dev')); // 'dev' is a popular format for development
 
 
